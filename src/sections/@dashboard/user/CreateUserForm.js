@@ -1,19 +1,17 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 // form
-import { useForm, Controller, useFormContext } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Stack, IconButton, InputAdornment, Modal, Box, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 // client
-import { addUser, login } from '../../../client';
+import { addUser } from '../../../client';
 // components
 import Iconify from '../../../components/Iconify';
-import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
+import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import RHFDatePicker from '../../../components/hook-form/RHFDatePicker';
 
 // ----------------------------------------------------------------------
@@ -69,7 +67,7 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
   const onSubmit = async (form) => {
     addUser(form).then(response => {
       if (response.data?.includes('html'))
-        navigate('/login', { replace: true });
+        navigate('/', { replace: true });
       setErrorMessage('nan');
       setSuccessMessage('User created successfully!');
       methods.reset();

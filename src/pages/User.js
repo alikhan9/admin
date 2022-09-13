@@ -29,8 +29,6 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
 // client
 import { getAllUsers } from '../client';
-// mock
-import USERLIST from '../_mock/user';
 import CreateUserForm from '../sections/@dashboard/user/CreateUserForm';
 import EditUserForm from '../sections/@dashboard/user/EditUserForm';
 
@@ -90,7 +88,7 @@ export default function User() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(12);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [usersData, setUsersData] = useState([]);
 
@@ -110,9 +108,9 @@ export default function User() {
   const requestAllUsers = () => {
     getAllUsers()
     .then(response => {
-      response.data.includes('html') ? navigate('/login', { replace: true }) : setUsersData(response.data);
+      response.data.includes('html') ? navigate('/', { replace: true }) : setUsersData(response.data);
     })
-    .catch(() => navigate('/login', { replace: true }));
+    .catch(() => navigate('/', { replace: true }));
   }
 
 
@@ -191,7 +189,7 @@ export default function User() {
         <Card sx={{ width: 1 }}>
           <UserListToolbar setSelected={setSelected} selected={selected} navigate={navigate} setUsersData={setUsersData} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800, height: '74vh' }}>
+            <TableContainer sx={{ height: '74vh' }}>
               <Table>
                 <UserListHead
                   order={order}
@@ -251,7 +249,7 @@ export default function User() {
           </Scrollbar>
 
           <TablePagination
-            rowsPerPageOptions={[12, 35, 50]}
+            rowsPerPageOptions={[10, 20, 30]}
             component="div"
             count={usersData?.length}
             rowsPerPage={rowsPerPage}

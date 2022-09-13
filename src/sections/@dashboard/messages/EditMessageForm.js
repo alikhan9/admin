@@ -6,16 +6,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Stack, Modal, Box, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-
 // client
-import { editUser } from '../../../client';
+import { editMessage } from './../../../client';
 // components
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
-import RHFDatePicker from '../../../components/hook-form/RHFDatePicker';
 
 // ----------------------------------------------------------------------
 
-export default function EditUserForm({ open, handleClose, navigate, editRow, setUsersData }) {
+export default function EditMessageForm({ open, handleClose, navigate, editRow, setMessages }) {
     const [value, setValue] = useState(new Date());
 
     const [errorMessage, setErrorMessage] = useState('nan');
@@ -23,20 +21,18 @@ export default function EditUserForm({ open, handleClose, navigate, editRow, set
 
     const LoginSchema = Yup.object().shape({
         id: Yup.string(),
-        username: Yup.string().required('Username is required'),
-        email: Yup.string().email('Please enter a valid email address').required('Email is required'),
-        first_name: Yup.string().required('First name is required'),
-        last_name: Yup.string().required('Last name is required'),
-        dateofbirth: Yup.string().required('Date of birth is required').matches(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/, 'Please enter a valid date'),
+        sender: Yup.string().required('Sender is required'),
+        receiver: Yup.string().required('Receiver is required'),
+        date: Yup.string().required('Date name is required'),
+        message: Yup.string().required('Message is required')
     });
 
     const defaultValues = {
         id: editRow.id,
-        username: editRow.username,
-        email: editRow.email,
-        first_name: editRow.first_name,
-        last_name: editRow.last_name,
-        dateofbirth: editRow.dateofbirth
+        sender: editRow.sender?.username,
+        receiver: editRow.receiver?.username,
+        date: editRow.date,
+        message: editRow.message,
     };
 
     const style = {
@@ -63,12 +59,12 @@ export default function EditUserForm({ open, handleClose, navigate, editRow, set
     } = methods;
 
     const onSubmit = async (form) => {
-        editUser(form).then(response => {
+        editMessage(form).then(response => {
             if (response.data?.includes('html'))
                 navigate('/', { replace: true });
             setErrorMessage('nan');
-            setSuccessMessage('User edited successfully!');
-            setUsersData(users => users.map(user => user.id == form.id ? form : user));
+            setSuccessMessage('Message edited successfully!');
+            setMessages(messages => messages.map(message => message.id == form.id ? form : message));
         }).catch(error => {
             setSuccessMessage('nan');
             if (error.code === 'ERR_NETWORK')
@@ -103,11 +99,10 @@ export default function EditUserForm({ open, handleClose, navigate, editRow, set
                         {errorMessage === 'nan' ? null : <TextField value={errorMessage} variant={"standard"} error />}
                         {successMessage === 'nan' ? null : <TextField value={successMessage} variant={"standard"} color="success" focused />}
                         <RHFTextField name="id" label="Id" inputProps={{ readOnly: true, }} val={editRow.id} />
-                        <RHFTextField name="username" label="Username" val={editRow.username} />
-                        <RHFTextField name="first_name" label="First name" val={editRow.first_name} />
-                        <RHFTextField name="last_name"  label="Last name" val={editRow.last_name} />
-                        <RHFTextField name="email" label="Email" val={editRow.email} />
-                        <RHFDatePicker name="dateofbirth"  label="Date of birth" val={editRow.dateofbirth}/>
+                        <RHFTextField name="sender" label="Sender" val={editRow.sender?.username} />
+                        <RHFTextField name="receiver" label="Receiver" val={editRow.receiver?.username} />
+                        <RHFTextField name="date"  label="Date" val={editRow.date} />
+                        <RHFTextField name="message" label="Message" val={editRow.message} />
 
                         <Box sx={{ display: 'flex', gap: 2 }}>
                             <LoadingButton fullWidth size="large" color="error" variant="contained" onClick={onClose}>

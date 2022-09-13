@@ -9,19 +9,30 @@ import { Stack, Modal, Box, TextField, MenuItem, FormControl, Select } from '@mu
 import { LoadingButton } from '@mui/lab';
 
 // client
-import { addGroup, getUsersUsernames } from '../../../client';
+import { addContact, addGroup, getUsersUsernames, login } from '../../../client';
 // components
 import Iconify from '../../../components/Iconify';
-import { FormProvider, RHFTextField } from '../../../components/hook-form';
+import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function CreateUserForm({ open, handleClose, navigate, requestAllGroups }) {
+export default function CreateContactForm({ open, handleClose, navigate, requestAllContacts }) {
+
   const [errorMessage, setErrorMessage] = useState('nan');
+
   const [successMessage, setSuccessMessage] = useState('nan');
+
   const [users, setUsers] = useState('nan');
+
   const [userId, setUserId] = useState('');
+
+  const [user2Id, setUser2Id] = useState('');
+
   const [error, setError] = useState(false);
+
+  const [error2, setError2] = useState(false);
+
+
 
   useEffect(() => {
     getUsersUsernames()
@@ -36,11 +47,9 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
   }, [])
 
   const LoginSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required')
   });
 
   const defaultValues = {
-    name: '',
   };
 
   const style = {
@@ -71,22 +80,32 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
       setError(true);
       return;
     }
-    const group = {
-      name: form.name,
-      owner: userId
+
+    if (user2Id === "") {
+      setError2(true);
+      return;
     }
 
-    if(userId !== "" && error === true)
+    const contact = {
+      user1: userId,
+      user2: user2Id
+    }
+
+    if (userId !== "" && error === true)
       setError(false);
 
-    addGroup(group).then(response => {
+    if (user2Id !== "" && error2 === true)
+      setError2(false);
+
+    addContact(contact).then(response => {
       if (response.data?.includes('html'))
         navigate('/', { replace: true });
       setErrorMessage('nan');
-      setSuccessMessage('Group created successfully!');
+      setSuccessMessage('Contact created successfully!');
       methods.reset();
-      requestAllGroups();
+      requestAllContacts();
       setError(false);
+      setError2(false);
     }).catch(error => {
       setSuccessMessage('nan');
       if (error.code === 'ERR_NETWORK')
@@ -101,8 +120,12 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
   };
 
 
-  const handleChangeusers = (event) => {
+  const handleChangeUser = (event) => {
     setUserId(event.target.value);
+  };
+
+  const handleChangeUser2 = (event) => {
+    setUser2Id(event.target.value);
   };
 
   const onClose = () => {
@@ -124,13 +147,22 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
           <Stack spacing={3}>
             {errorMessage === 'nan' ? null : <TextField value={errorMessage} variant={"standard"} error />}
             {successMessage === 'nan' ? null : <TextField value={successMessage} variant={"standard"} color="success" focused />}
-            <RHFTextField name="name" label="Name" />
             <TextField
               error={error}
               value={userId}
               select
-              label="Owner"
-              onChange={handleChangeusers}
+              label="User 1"
+              onChange={handleChangeUser}
+            >
+              {users === 'nan' ? null : users?.map((user, index) => <MenuItem key={index} value={user.id}>{user.username}</MenuItem>
+              )}
+            </TextField>
+            <TextField
+              error={error2}
+              value={user2Id}
+              select
+              label="User 2"
+              onChange={handleChangeUser2}
             >
               {users === 'nan' ? null : users?.map((user, index) => <MenuItem key={index} value={user.id}>{user.username}</MenuItem>
               )}

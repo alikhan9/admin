@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
-import { deleteUsers } from 'src/client';
+import { deleteGroupsMessages } from 'src/client';
 
 // ----------------------------------------------------------------------
 
@@ -30,25 +30,25 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-UserListToolbar.propTypes = {
+GroupsMessageListToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({ selected, filterName, onFilterName, setUsersData, navigate, setSelected }) {
+export default function GroupsMessageListToolbar({ selected, filterName, onFilterName, setGroupsMessages, navigate, setSelected }) {
 
 
-  const deleteSelectedUsers = () => {
-    deleteUsers(selected)
+  const deleteSelectedGroupsMessages = () => {
+    deleteGroupsMessages(selected)
       .then((response) => {
         if (response.data.includes('html'))
-          navigate('/login', { replace: true });
-        setUsersData(users => users.filter(user => !selected.includes(user.id)));
+          navigate('/', { replace: true });
+          setGroupsMessages(messages => messages.filter(message => !selected.includes(message.id)));
         setSelected([]);
       })
       .catch((err) => {
-        navigate('/login', { replace: true });
+        navigate('/', { replace: true });
       });
   }
 
@@ -82,7 +82,7 @@ export default function UserListToolbar({ selected, filterName, onFilterName, se
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton onClick={() => deleteSelectedUsers()} >
+          <IconButton onClick={() => deleteSelectedGroupsMessages()} >
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>

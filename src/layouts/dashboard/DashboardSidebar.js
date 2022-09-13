@@ -46,8 +46,8 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
 
   const handleClickLogout = () => {
     logout()
-      .then(() => navigate('/login', { replace: true }))
-      .catch(() => navigate('/login', { replace: true }))
+      .then(() => navigate('/', { replace: true }))
+      .catch(() => navigate('/', { replace: true }))
   }
 
   const renderContent = (

@@ -4,11 +4,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
-import { deleteUsers } from 'src/client';
+import { deleteGroupsMessages } from './../../../client';
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({ handleOpen, row, setEditRow, navigate, setUsersData }) {
+export default function GroupsMessageMoreMenu({ handleOpen, row, setEditRow, navigate, setGroupsMessages }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -19,14 +19,14 @@ export default function UserMoreMenu({ handleOpen, row, setEditRow, navigate, se
   }
 
   const handleDelete = () => {
-    deleteUsers(row.id)
+    deleteGroupsMessages(row.id)
       .then((response) => {
         if (response.data.includes('html'))
-          navigate('/login', { replace: true });
-        setUsersData(users => users.filter(user => row.id != user.id));
+          navigate('/', { replace: true });
+          setGroupsMessages(messages => messages.filter(message => row.id != message.id));
       })
       .catch((err) => {
-        navigate('/login', { replace: true });
+        navigate('/', { replace: true });
       });
   }
 

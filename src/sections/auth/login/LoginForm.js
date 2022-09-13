@@ -45,9 +45,13 @@ export default function LoginForm() {
 
   const onSubmit = async (form) => {
     login(form.username, form.password)
-      .then(() => {
-        navigate('/dashboard/app', { replace: true });
-        setErrorMessage('nan');
+      .then((reponse) => {
+        if(reponse?.data?.includes("Admin")){
+          navigate('/dashboard/app', { replace: true });
+          setErrorMessage('nan');
+        }else
+          setErrorMessage('Wrong username or password');
+
       }).catch(err => {
         if (err?.code?.includes('ERR_NETWORK'))
           setErrorMessage('Network error');
@@ -79,11 +83,7 @@ export default function LoginForm() {
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <RHFCheckbox name="remember" label="Remember me" />
-      </Stack>
-
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+      <LoadingButton fullWidth size="large" type="submit" sx={{ my: 2 }} variant="contained" loading={isSubmitting}>
         Login
       </LoadingButton>
     </FormProvider>

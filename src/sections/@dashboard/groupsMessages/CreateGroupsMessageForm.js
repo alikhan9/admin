@@ -1,46 +1,36 @@
 import * as Yup from 'yup';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Modal, Box, TextField, MenuItem, FormControl, Select } from '@mui/material';
-
+import { Stack, Modal, Box, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 // client
-import { addGroup, getUsersUsernames } from '../../../client';
+import { addGroupMessage, addMessage } from '../../../client';
 // components
-import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function CreateUserForm({ open, handleClose, navigate, requestAllGroups }) {
+export default function CreateGroupsMessageForm({ open, handleClose, navigate, requestAllMessages }) {
+  const [value, setValue] = useState(new Date());
+
   const [errorMessage, setErrorMessage] = useState('nan');
   const [successMessage, setSuccessMessage] = useState('nan');
-  const [users, setUsers] = useState('nan');
-  const [userId, setUserId] = useState('');
-  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    getUsersUsernames()
-      .then((users) => {
-        if (users.data?.includes('html'))
-          navigate('/', { replace: true });
-        setUsers(users.data);
-      })
-      .catch((err) => {
-        setErrorMessage(err?.response?.data?.message);
-      });
-  }, [])
 
   const LoginSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required')
+    sender: Yup.string().required('Sender is required'),
+    receiver: Yup.string().required('Receiver is required'),
+    message: Yup.string().required('Message is required'),
   });
 
   const defaultValues = {
-    name: '',
+    sender: '',
+    receiver: '',
+    message: '',
   };
 
   const style = {
@@ -67,26 +57,13 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
   } = methods;
 
   const onSubmit = async (form) => {
-    if (userId === "") {
-      setError(true);
-      return;
-    }
-    const group = {
-      name: form.name,
-      owner: userId
-    }
-
-    if(userId !== "" && error === true)
-      setError(false);
-
-    addGroup(group).then(response => {
+    addGroupMessage(form).then(response => {
       if (response.data?.includes('html'))
         navigate('/', { replace: true });
       setErrorMessage('nan');
-      setSuccessMessage('Group created successfully!');
+      setSuccessMessage('Message created successfully!');
       methods.reset();
-      requestAllGroups();
-      setError(false);
+      requestAllMessages();
     }).catch(error => {
       setSuccessMessage('nan');
       if (error.code === 'ERR_NETWORK')
@@ -100,17 +77,12 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
     setValue(newValue);
   };
 
-
-  const handleChangeusers = (event) => {
-    setUserId(event.target.value);
-  };
-
   const onClose = () => {
-    setErrorMessage('nan');
-    setSuccessMessage('nan');
-    handleClose();
+    setErrorMessage('nan'); 
+    setSuccessMessage('nan'); 
+    handleClose(); 
     methods.reset();
-  }
+}
 
   return (
     <Modal
@@ -124,17 +96,10 @@ export default function CreateUserForm({ open, handleClose, navigate, requestAll
           <Stack spacing={3}>
             {errorMessage === 'nan' ? null : <TextField value={errorMessage} variant={"standard"} error />}
             {successMessage === 'nan' ? null : <TextField value={successMessage} variant={"standard"} color="success" focused />}
-            <RHFTextField name="name" label="Name" />
-            <TextField
-              error={error}
-              value={userId}
-              select
-              label="Owner"
-              onChange={handleChangeusers}
-            >
-              {users === 'nan' ? null : users?.map((user, index) => <MenuItem key={index} value={user.id}>{user.username}</MenuItem>
-              )}
-            </TextField>
+            <RHFTextField name="sender" label="Sender" />
+            <RHFTextField name="receiver" label="Receiver" />
+            <RHFTextField name="message" label="Message" />
+
             <Box sx={{ display: 'flex', gap: 2 }}>
               <LoadingButton fullWidth size="large" color="error" variant="contained" onClick={onClose}>
                 Cancel

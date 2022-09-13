@@ -26,6 +26,11 @@ const navConfig = [
     path: '/dashboard/messages',
     icon: getIcon('eva:message-square-fill'),
   },
+  {
+    title: 'Groups Messages',
+    path: '/dashboard/groupsMessages',
+    icon: getIcon('eva:message-circle-fill'),
+  },
 ];
 
 export default navConfig;
